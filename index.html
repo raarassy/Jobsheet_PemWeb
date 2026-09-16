@@ -5,30 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Product Explorer & Analytics Dashboard</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .controls { display: flex; gap: 10px; margin-bottom: 20px; }
-    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
-    .product-card { border: 1px solid #ddd; padding: 15px; border-radius: 8px; background: #f9f9f9; }
-    .product-card h3 { margin-top: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f4f6f8; }
+    h1 { color: #333; }
+    .controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    input, select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
+    
+    .stats-panel { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+    .stat-box { background: white; padding: 12px 18px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 4px solid #007bff; }
+
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+    .product-card { border: 1px solid #e0e0e0; padding: 15px; border-radius: 8px; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
+    .product-card img { width: 100%; height: 160px; object-fit: contain; background: #fafafa; border-radius: 4px; margin-bottom: 10px; }
+    .product-card h3 { font-size: 16px; margin: 5px 0 10px 0; height: 40px; overflow: hidden; }
+    .product-card p { margin: 3px 0; font-size: 13px; color: #555; }
+    
+    .loading-msg, .error-msg, .empty-msg { font-size: 16px; font-weight: bold; padding: 20px; grid-column: 1 / -1; }
+    .error-msg { color: red; }
   </style>
 </head>
 <body>
 
-  <h1>Product Explorer</h1>
+  <h1>Product Explorer & Analytics Dashboard</h1>
+
+  <div id="stats-container" class="stats-panel"></div>
 
   <div class="controls">
     <input type="text" id="search-input" placeholder="Cari produk...">
     <select id="category-select">
       <option value="all">Semua Kategori</option>
-      <option value="laptops">Laptops</option>
-      <option value="phones">Phones</option>
-      <option value="audio">Audio</option>
     </select>
     <select id="sort-select">
       <option value="default">Urutkan</option>
       <option value="price-asc">Harga Terendah</option>
       <option value="price-desc">Harga Tertinggi</option>
       <option value="rating">Rating Tertinggi</option>
+      <option value="title">Judul (A-Z)</option>
     </select>
   </div>
 

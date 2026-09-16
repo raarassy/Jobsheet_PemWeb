@@ -1,42 +1,61 @@
 import { state } from "./state.js";
-import { filterProducts, sortProducts } from "./algorithms.js";
-import { renderProducts } from "./ui.js";
+import { fetchProducts } from "./api.js";
+import { filterProducts, sortProducts, getStatistics } from "./algorithms.js";
+import { renderProducts, renderStatistics } from "./ui.js";
 
-// BAGIAN 22: Promise Simulation Data Loading
-function mockFetchProducts() {
-  return new Promise((resolve, reject) => {
+async function loadProducts() {
+  const container = document.querySelector("#product-list");
+  try {
     state.status = "loading";
-    setTimeout(() => {
-      const mockData = [
-        { id: 1, title: "Laptop Modular", price: 1200, category: "laptops", rating: 4.8 },
-        { id: 2, title: "Smartphone Mod", price: 800, category: "phones", rating: 4.5 },
-        { id: 3, title: "Audio Pro", price: 150, category: "audio", rating: 4.2 }
-      ];
-      resolve(mockData);
-    }, 500);
-  });
+    if (container) container.innerHTML = "<p class='loading-msg'>Memuat data dari DummyJSON API...</p>";
+
+    const data = await fetchProducts();
+    state.products = data;
+    state.status = "success";
+
+    populateCategoryOptions(data);
+    render();
+  } catch (error) {
+    state.status = "error";
+    if (container) container.innerHTML = `<p class='error-msg'>Gagal memuat data: ${error.message}</p>`;
+  }
+}
+
+function populateCategoryOptions(products) {
+  const categorySelect = document.querySelector("#category-select");
+  if (!categorySelect) return;
+  
+  const categories = ["all", ...new Set(products.map(p => p.category))];
+  categorySelect.innerHTML = categories.map(cat => 
+    `<option value="${cat}">${cat === 'all' ? 'Semua Kategori' : cat}</option>`
+  ).join("");
 }
 
 function render() {
   const filtered = filterProducts(state.products, state.search, state.category);
   const sorted = sortProducts(filtered, state.sortBy);
+  
   renderProducts(sorted);
+  
+  const stats = getStatistics(filtered);
+  renderStatistics(stats);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  mockFetchProducts()
-    .then(data => {
-      state.products = data;
-      state.status = "success";
-      render();
-    })
-    .catch(err => {
-      state.status = "error";
-      console.error(err);
-    });
+  loadProducts();
 
   document.querySelector("#search-input")?.addEventListener("input", (e) => {
     state.search = e.target.value;
+    render();
+  });
+
+  document.querySelector("#category-select")?.addEventListener("change", (e) => {
+    state.category = e.target.value;
+    render();
+  });
+
+  document.querySelector("#sort-select")?.addEventListener("change", (e) => {
+    state.sortBy = e.target.value;
     render();
   });
 });
